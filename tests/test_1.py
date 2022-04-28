@@ -1,7 +1,9 @@
 # this code aims to control some robot movement.
 
-from src.utils import *
-import sim  # remover depois que refatorar
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../src/')))
 
 clientID = connect_2_sim()
 test_connection(clientID)
