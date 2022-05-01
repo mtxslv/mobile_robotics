@@ -41,12 +41,18 @@ The code is composed of two functions. As can be seen [here on the docs](https:/
 
 The `sysCall_init()` instantiates a graph object and define two curves, named _joint 1 velocity_ and _joint 2 velocity_. The last thing it does is to retrive the joint handles associated with the motors. 
 
-The `sysCall_sensins()` then updates the graph every step.
+The `sysCall_sensing()` then updates the graph every step.
 
 It looks simple and apparently it is supposed to be. But when I run it, the graph didn't change nor updated. :(
 
 # 1st May Modifications 
 
-https://forum.coppeliarobotics.com/viewtopic.php?t=9370
-https://www.coppeliarobotics.com/helpFiles/en/childScripts.htm
-https://www.coppeliarobotics.com/helpFiles/en/threadedAndNonThreadedCode.htm
+How to make graphs work? Well, it is actually not complicated, _if you don't miss the difference between [child scripts](https://www.coppeliarobotics.com/helpFiles/en/childScripts.htm) and customization scripts_. I noticed it when I read [this forum question](https://forum.coppeliarobotics.com/viewtopic.php?t=9370). Whatever...
+
+I added a graph in the scene tree: no big deal. The trick is adding a child script associated with the graph object. I chose a [Non-Threaded](https://www.coppeliarobotics.com/helpFiles/en/threadedAndNonThreadedCode.htm), Lua script. 
+
+Once there, I can add the default graph script. I just needed to get the right Handlers (for which feature I wanted to graph) and _voilá_! Graphs served.
+
+Apparently there are a difference between instantiating Streaming Graphs (i.e., time-dependent) and State-Space Graphs (i.e., global position). But there is no big deal in it: we just need to call different functions. These ones can be found on the [Graph Example](https://www.coppeliarobotics.com/helpFiles/en/graphs.htm).
+
+The [Graph Example](https://www.coppeliarobotics.com/helpFiles/en/graphs.htm) was used as a demo for the State-Space Graph. I used the help file on [Object Orientation](https://www.coppeliarobotics.com/helpFiles/en/regularApi/simGetObjectOrientation.htm) to get the robot's orientation and [this forum question](https://forum.coppeliarobotics.com/viewtopic.php?t=6070) to get the robot's position.
