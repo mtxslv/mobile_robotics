@@ -44,3 +44,9 @@ The `sysCall_init()` instantiates a graph object and define two curves, named _j
 The `sysCall_sensins()` then updates the graph every step.
 
 It looks simple and apparently it is supposed to be. But when I run it, the graph didn't change nor updated. :(
+
+# 1st May Modifications 
+
+https://forum.coppeliarobotics.com/viewtopic.php?t=9370
+https://www.coppeliarobotics.com/helpFiles/en/childScripts.htm
+https://www.coppeliarobotics.com/helpFiles/en/threadedAndNonThreadedCode.htm
