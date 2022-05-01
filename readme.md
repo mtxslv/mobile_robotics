@@ -1,5 +1,10 @@
-Welcome to Mobile Robotics Github! 
+# Welcome to Mobile Robotics Github! 
 Here you'll find everything you need to know about the projects regarding SISTEMAS ROBOTICOS AUTONOMOS (DCA0440). Below you can find a description of the goals and their deadlines.
+
+# Important Links:
+* [Trello](https://trello.com/invite/b/LE1Vd2Gn/085423fc3f98ddc30c34dec30c24bd3e/primeio-projeto-primeira-meta)
+* [Calendar](https://calendar.google.com/calendar/u/0?cid=dW8wNGxyY25oZnMxYXY1ZWk5M2I3NDBwbThAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
+
 
 # Primeiro Projeto
 ## Meta 01 (. - 3 de maio)
