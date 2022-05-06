@@ -40,7 +40,7 @@ class CubicPolynomials:
             a3 = -2*delta_x
             b0 = self.initial_y
             b3 = 0 # delta_y - b1 - b2 = delta_y - delta_y - 0
-            print('both points provided near singularity')
+            print('both provided points near singularity')
         elif((self.initial_theta>math.pi/2-small_delta)
              and(self.initial_theta<math.pi/2+small_delta)):
             a3 = -delta_x/2
