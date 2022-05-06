@@ -40,7 +40,7 @@ class CubicPolynomials:
             a3 = -2*delta_x
             b0 = self.initial_y
             b3 = 0 # delta_y - b1 - b2 = delta_y - delta_y - 0
-            print('first option')
+            print('both points provided near singularity')
         elif((self.initial_theta>math.pi/2-small_delta)
              and(self.initial_theta<math.pi/2+small_delta)):
             a3 = -delta_x/2
@@ -52,7 +52,7 @@ class CubicPolynomials:
             b1 = 2*(delta_y-final_alpha*delta_x) - final_alpha*a3 # + b3 = + 0
             b2 = 2*final_alpha*delta_x - delta_y + final_alpha*a3 # - 2*b3 = 0
 
-            print('second option')
+            print('initial point near singularity')
         elif((self.final_theta>math.pi/2-small_delta)
              and(self.final_theta<math.pi/2+small_delta)):
             a1 = 1.5*delta_x
@@ -63,7 +63,7 @@ class CubicPolynomials:
             b0 = self.initial_y
             b1 = initial_alpha*a1
             b3 = delta_y - initial_alpha*a1-b2
-            print('third option')
+            print('final point near singularity')
         else:
             a1 = delta_x
             a2 = 0
@@ -73,7 +73,7 @@ class CubicPolynomials:
             b1 = initial_alpha*a1
             b2 = 3*(delta_y - final_alpha*delta_x) + 2*(final_alpha-initial_alpha)*a1 + final_alpha*a2
             b3 = 3*final_alpha*delta_x - 2*delta_y - (2*final_alpha-initial_alpha)*a1 - final_alpha*a2
-            print('fourth option')
+            print('no point near singularity')
 
         self.x_curve_parameters = [a0,a1,a2,a3]
         self.y_curve_parameters = [b0,b1,b2,b3]
