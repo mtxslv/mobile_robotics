@@ -114,4 +114,7 @@ class CubicPolynomials:
 
         return x_lambda, y_lambda, theta_lambda
 
+    def get_curve_points(self, lambda_vector):
+        ...
+
     
