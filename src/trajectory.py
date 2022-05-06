@@ -18,9 +18,9 @@ class CubicPolynomials:
         self.final_y = final_config[1]
         self.final_theta = final_config[2]
 
-        self.compute_curve_parameters()
+        self._compute_curve_parameters()
     
-    def compute_curve_parameters(self):
+    def _compute_curve_parameters(self):
         """This method computes the curve parameters themselves, following the algorithm introduced by Pablo.
         """
 
@@ -78,14 +78,40 @@ class CubicPolynomials:
         self.x_curve_parameters = [a0,a1,a2,a3]
         self.y_curve_parameters = [b0,b1,b2,b3]
 
-    def get_configuration_over_trajectory(self, lambda_parameter):
-        lambda_squared = lambda_parameter*lambda_parameter
-        lambda_cubed = lambda_parameter*lambda_parameter*lambda_parameter
-        
-        x_lambda = self.x_curve_parameters[0] + self.x_curve_parameters[1]*lambda_parameter + self.x_curve_parameters[2]*lambda_squared+self.x_curve_parameters[3]*lambda_cubed
-        y_lambda = self.y_curve_parameters[0] + self.y_curve_parameters[1]*lambda_parameter + self.y_curve_parameters[2]*lambda_squared+self.y_curve_parameters[3]*lambda_cubed
+        print(f'x(lmb) = {a0} + {a1}*lmb + {a2}*lmb² + {a3}*lmb³')
+        print(f'y(lmb) = {b0} + {b1}*lmb + {b2}*lmb² + {b3}*lmb³')
 
-        alpha_lambda = (self.y_curve_parameters[1] + 2*self.y_curve_parameters[2]*lambda_parameter+3*self.y_curve_parameters[3]*lambda_squared)/(self.x_curve_parameters[1] + 2*self.x_curve_parameters[2]*lambda_parameter+3*self.x_curve_parameters[3]*lambda_squared)
-        theta_lambda = math.atan(alpha_lambda)
+    def get_point(self, lambda_parameter):
+        """Generates a point over the given trajectory.
+
+        Args:
+            lambda_parameter (float): polynomials' input, ranging from 0 to 1
+
+        Returns:
+            tuple: configuration (x,y,theta)
+        """
+        if lambda_parameter <= 1 and lambda_parameter >= 0:
+
+            lambda_squared = lambda_parameter*lambda_parameter
+            lambda_cubed = lambda_parameter*lambda_parameter*lambda_parameter
+            
+            x_lambda = self.x_curve_parameters[0] + self.x_curve_parameters[1]*lambda_parameter + self.x_curve_parameters[2]*lambda_squared+self.x_curve_parameters[3]*lambda_cubed
+            y_lambda = self.y_curve_parameters[0] + self.y_curve_parameters[1]*lambda_parameter + self.y_curve_parameters[2]*lambda_squared+self.y_curve_parameters[3]*lambda_cubed
+
+            alpha_denominator = self.x_curve_parameters[1] + 2*self.x_curve_parameters[2]*lambda_parameter+3*self.x_curve_parameters[3]*lambda_squared
+            alpha_numerator = self.y_curve_parameters[1] + 2*self.y_curve_parameters[2]*lambda_parameter+3*self.y_curve_parameters[3]*lambda_squared
+
+            if alpha_denominator == 0:
+                if alpha_numerator<0:
+                    theta_lambda = -math.pi/2
+                else:
+                    theta_lambda = math.pi/2
+            else:
+                alpha_lambda = alpha_numerator/alpha_denominator
+                theta_lambda = math.atan(alpha_lambda)
+        else:
+            raise ValueError('lambda must be between 0 and 1')
 
         return x_lambda, y_lambda, theta_lambda
+
+    
