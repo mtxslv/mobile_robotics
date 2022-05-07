@@ -1,6 +1,7 @@
 # this file contains the code needed for generating trajectories using Cubic Polynomials
 
 import math
+import numpy as np
 
 class CubicPolynomials:
     def __init__(self, initial_config, final_config):
@@ -21,7 +22,7 @@ class CubicPolynomials:
         self._compute_curve_parameters()
     
     def _compute_curve_parameters(self):
-        """This method computes the curve parameters themselves, following the algorithm introduced by Pablo.
+        """This method computes the curve parameters themselves, following the algorithm showed by Pablo.
         """
 
         delta_x = self.final_x - self.initial_x
@@ -88,7 +89,7 @@ class CubicPolynomials:
             lambda_parameter (float): polynomials' input, ranging from 0 to 1
 
         Returns:
-            tuple: configuration (x,y,theta)
+            list: configuration [x,y,theta]
         """
         if lambda_parameter <= 1 and lambda_parameter >= 0:
 
@@ -112,11 +113,28 @@ class CubicPolynomials:
         else:
             raise ValueError('lambda must be between 0 and 1')
 
-        return x_lambda, y_lambda, theta_lambda
+        return [x_lambda, y_lambda, theta_lambda]
 
-    def get_curve_points(self, how_many_points):
+    def get_curve_points(self, how_many_points=10):
         # this function returns how_many_points in configuration form (position and orientation)
         # in a 2D numpy array
-        ...
+        """This method is used to compute the points' configuration over the polynomial curve. The amount
+            of points over the polynomial curve is defined with how_many_points.
+
+        Args:
+            how_many_points (int, optional): How many points over the curve is required. Defaults to 10.
+
+        Returns:
+            points (numpy array): the configurations over the line. A numpy array, whose rows follow the
+                                  pattern: [lambda, x, y, theta]
+        """
+        lambdas = np.linspace(0,1,how_many_points)
+        points = []
+        for lmb in lambdas:
+            current_point = self.get_point(lmb)
+            current_point.insert(0,lmb)
+            points.append(current_point)
+
+        return np.array(points)
 
     
