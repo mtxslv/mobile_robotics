@@ -81,6 +81,7 @@ class CubicPolynomials:
 
         print(f'x(lmb) = {a0} + {a1}*lmb + {a2}*lmb² + {a3}*lmb³')
         print(f'y(lmb) = {b0} + {b1}*lmb + {b2}*lmb² + {b3}*lmb³')
+        print(f'theta(lmb) = atan( ({b1} + {2*b2}*lmb + {3*b3}*lmb²) / ({a1} + {2*a2}*lmb + {3*a3}*lmb²) )')
 
     def get_point(self, lambda_parameter):
         """Generates a point over the given trajectory.
