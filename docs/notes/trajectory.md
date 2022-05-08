@@ -29,3 +29,9 @@ Secondly, a use case was assessed based on the third question of [the Exercises'
 **It is important to note that, even though critical situations were tested, they had no written example to be compared with so their quality could be determined precisely.**
 
 **The situation with only the first point near a singularity was tested. There, a curious thing occurred. Even though the final point had an angle of _pi_, the system created a curve with final angle equal to  0.**
+
+# 8th May Updates 
+
+I noticed some errors on the theta angle. If the angles are supposed to lay on the left circle's quadrants, it will be computed wrongly. That's because the math.atan() function limits the result between pi/2 and -pi/2. This happens when the end of the curve is at the left. Thus, I suggest summing the angle result from atan with 180º when the end of the curve is at the left side of the starting point.
+
+Another error happens when the singularities are upside down (-pi/2). The algorithm works only with positive angles. What to do? I messaged Pablo to find out.
