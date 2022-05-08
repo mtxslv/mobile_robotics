@@ -111,6 +111,9 @@ class CubicPolynomials:
             else:
                 alpha_lambda = alpha_numerator/alpha_denominator
                 theta_lambda = math.atan(alpha_lambda)
+
+                if self.final_x < self.initial_x:
+                    theta_lambda = math.pi + theta_lambda
         else:
             raise ValueError('lambda must be between 0 and 1')
 
