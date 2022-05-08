@@ -31,8 +31,20 @@ class CubicPolynomials:
         final_alpha = math.tan(self.final_theta)
         initial_alpha = math.tan(self.initial_theta)
 
-        if((self.initial_theta>math.pi/2-small_delta and self.initial_theta<math.pi/2+small_delta)
-            and(self.final_theta>math.pi/2-small_delta and self.final_theta<math.pi/2+small_delta)):
+        if self.final_theta < 0:
+            final_theta_for_testing = -self.final_theta
+        else:
+            final_theta_for_testing = self.final_theta
+
+        if self.initial_theta < 0:
+            initial_theta_for_testing = -self.initial_theta
+        else:
+            initial_theta_for_testing = self.initial_theta
+        
+
+
+        if((initial_theta_for_testing>math.pi/2-small_delta and initial_theta_for_testing<math.pi/2+small_delta)
+            and(final_theta_for_testing>math.pi/2-small_delta and final_theta_for_testing<math.pi/2+small_delta)):
             b1 = delta_y
             b2 = 0
             a0 = self.initial_x
@@ -42,8 +54,8 @@ class CubicPolynomials:
             b0 = self.initial_y
             b3 = 0 # delta_y - b1 - b2 = delta_y - delta_y - 0
             print('both provided points near singularity')
-        elif((self.initial_theta>math.pi/2-small_delta)
-             and(self.initial_theta<math.pi/2+small_delta)):
+        elif((initial_theta_for_testing>math.pi/2-small_delta)
+             and(initial_theta_for_testing<math.pi/2+small_delta)):
             a3 = -delta_x/2
             b3 = 0 # qualquer valor
             a0 = self.initial_x
@@ -54,8 +66,8 @@ class CubicPolynomials:
             b2 = 2*final_alpha*delta_x - delta_y + final_alpha*a3 # - 2*b3 = 0
 
             print('initial point near singularity')
-        elif((self.final_theta>math.pi/2-small_delta)
-             and(self.final_theta<math.pi/2+small_delta)):
+        elif((final_theta_for_testing>math.pi/2-small_delta)
+             and(final_theta_for_testing<math.pi/2+small_delta)):
             a1 = 1.5*delta_x
             b2 = 0
             a0 = self.initial_x
@@ -112,7 +124,7 @@ class CubicPolynomials:
                 alpha_lambda = alpha_numerator/alpha_denominator
                 theta_lambda = math.atan(alpha_lambda)
 
-                if self.final_x < self.initial_x:
+                if self.final_x < self.initial_x: 
                     theta_lambda = math.pi + theta_lambda
         else:
             raise ValueError('lambda must be between 0 and 1')
