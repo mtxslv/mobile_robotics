@@ -20,16 +20,16 @@ def send_points_to_sim(points, clientID, sleep_time = 0.07, ):
         raw_bytes = (ctypes.c_ubyte * len(packedData)).from_buffer_copy(packedData) 
         
         returnCode = sim.simxWriteStringStream(clientID, "point_coord", raw_bytes, sim.simx_opmode_oneshot)
-        if returnCode != 0:
+        if returnCode != 0 and returnCode != 1:
             print(f'Point {i.round(3)} not sent. Error {returnCode}')
         time.sleep(sleep_time)
 
 # Gerar Caminho
 pos_ini = [0,0,0]
-pos_fin = [10,10,math.pi/4]
+pos_fin = [2.5,2.5,math.pi/4]
 
 path = CubicPolynomials(pos_ini, pos_fin)
-points = path.get_curve_points(20)
+points = path.get_curve_points(200)
 
 # Conectar no Vrep
 clientID = connect_2_sim()
