@@ -1,0 +1,9 @@
+# Drawing trajectories with points in VRep/CoppeliaSim
+
+The approach for drawing a trajectory in VRep is heavily inspired by [Ahmed El Fakharany](https://github.com/afakharany93)'s work entitled "[Path tracking tutorial for pioneer robot in vrep](https://medium.com/@afakharany93/path-tracking-tutorial-for-pioneer-robot-in-vrep-acffcf76875b)".
+
+In his tutorial, Ahmed shows a function that recieves packets of data with the help of VRep's [Remote API](https://www.coppeliarobotics.com/helpFiles/en/remoteApiOverview.htm). He mentions te existence of a lua thread script attached to "the lights" in his scene, and in this script he recieves a _StringSignal_ and uses that to add objects in the scene.
+
+However, his function is no longer suported by the latest version of CoppeliaSim, this is what took most of the development time. Instead of using ``sysCall_threadmain()`` on the "thread" script of the lights, when you click on the default lights object, add a lua threaded child script and try to edit it, you should put the code inside the ``coroutineMain()`` function. It is also important to notice that it is required to let the simulation continue so that the points are actually placed in the scene, to do so, add the line ``sim.switchThread()`` at the end of the ``while`` loop.
+
+Concurrent to figuring that out, the function that sends the data to the former algorithm was also being reformulated. Ahmed also shows his function that sends packets of data to VRep using ``vrep.simxWriteStringStream()``, in our case, it was as simple as updating ``vrep`` to ``sim`` and trimming his transformations of the recieved data, since our _CubicPolynomials_ class can already give us the list of points to send. Minor adjustments were also made, mainly for debug purposes.
