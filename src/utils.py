@@ -8,6 +8,7 @@ goals advance.
 # python native libs
 import time
 import sys
+import ctypes
 
 # 3rd party software
 import sim # simulation lib
@@ -56,3 +57,17 @@ def robot_run(clientID, left_motor_handle, right_motor_handle, left_target_veloc
                                                                 targetVelocity=right_target_velocity,operationMode=sim.simx_opmode_blocking)
                                                                     
     return return_value_left_motor_control,return_value_right_motor_control
+
+def send_points_to_sim(points, clientID, sleep_time = 0.07):
+    #the bigger the sleep time the more accurate the points are 
+    #placed but you have to be very patient :D
+    for p in points:
+        packedData=sim.simxPackFloats(p.flatten())
+        raw_bytes = (ctypes.c_ubyte * len(packedData)).from_buffer_copy(packedData) 
+        
+        returnCode = sim.simxWriteStringStream(clientID, "point_coord", raw_bytes, sim.simx_opmode_oneshot)
+        if returnCode != 0 and returnCode != 1:
+            print(f'Point {p.round(3)} not sent. Error {returnCode}')
+        else:
+            print(p)
+        time.sleep(sleep_time)

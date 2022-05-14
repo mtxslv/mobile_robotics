@@ -7,21 +7,6 @@ sys.path.insert(0, os.path.abspath(
 from utils import *
 from trajectory import CubicPolynomials
 import math
-import ctypes
-
-def send_points_to_sim(points, clientID, sleep_time = 0.07):
-    #the bigger the sleep time the more accurate the points are 
-    #placed but you have to be very patient :D
-    for p in points:
-        packedData=sim.simxPackFloats(p.flatten())
-        raw_bytes = (ctypes.c_ubyte * len(packedData)).from_buffer_copy(packedData) 
-        
-        returnCode = sim.simxWriteStringStream(clientID, "point_coord", raw_bytes, sim.simx_opmode_oneshot)
-        if returnCode != 0 and returnCode != 1:
-            print(f'Point {p.round(3)} not sent. Error {returnCode}')
-        else:
-            print(p)
-        time.sleep(sleep_time)
 
 # Gerar Caminho
 pos_ini = [0,0,0]
