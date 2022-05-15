@@ -34,6 +34,16 @@ def test_connection(clientID):
     else:
         print ('Remote API function call returned with error code: ',res)
 
+def get_pioneer3DX_handle(clientID):
+    error_code, p3dx_handle = sim.simxGetObjectHandle(clientID=clientID,
+                                                        objectName='./PioneerP3DX',
+                                                        operationMode = sim.simx_opmode_blocking)
+    if error_code != 0:
+        print('some error occurred...')
+    else:
+        print('PioneerP3DX handler successfully retrieved!')
+    return p3dx_handle
+
 def get_pioneer3DX_motor_handles_(clientID):
     # let's take the robot handles
     error_code_left_motor, left_motor_handle =  sim.simxGetObjectHandle(clientID= clientID, 
