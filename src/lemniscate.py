@@ -24,7 +24,7 @@ class Lemniscate:
         else:
             raise ValueError('a_y must be greater than 0 and less than 2.5')            
     
-    def get_curve_points(self, how_many_points=20):
+    def get_curve_points(self, how_many_points=50):
         """Return the position, velocity, acceleration and orientation over the lemniscate curve.
 
         Args:
