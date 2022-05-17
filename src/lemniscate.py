@@ -4,12 +4,17 @@ import math
 import numpy as np
 
 class Lemniscate:
-    def __init__(self, a_x, a_y):
-        """This class is used to compute a lemniscate curve.
+    def __init__(self, a_x, a_y, f_x, f_y):
+        """This class is used to compute a lemniscate curve. It ranges from -a_x to a_x horizontally, 
+            and from -a_y to a_y vertically. The movement of a particle over the curve is such that 
+            it returns to its original horizontal coordinate in 1/f_x units of time, and to its original
+            vetical coordinate in 1/f_y units of time.
 
         Args:
             a_x (float): The X amplitude (how far the curve goes horizontally)
             a_y (float): The Y amplitude (how far the curve goes vertically)
+            f_x (float): The frequency (cicles/second) of the X component. Ideally it equals f_y.
+            f_y (float): The frequency (cicles/second) of the Y component. Ideally it equals f_x.
 
         Raises:
             ValueError: raised when a_x is not inside the interval (0 , 2.5]
@@ -22,8 +27,16 @@ class Lemniscate:
         if a_y > 0 and a_y <= 2.5:
             self.a_y = a_y
         else:
-            raise ValueError('a_y must be greater than 0 and less than 2.5')            
-    
+            raise ValueError('a_y must be greater than 0 and less than 2.5')    
+        if f_x <=0:        
+            raise ValueError('f_x must be greater than 0')
+        else:
+            self.f_x = f_x
+        if f_y <=0:
+            raise ValueError('f_y must be greater than 0')
+        else:
+            self.f_y = f_y
+                
     def get_curve_points(self, how_many_points=50):
         """Return the position, velocity, acceleration and orientation over the lemniscate curve.
 
@@ -36,11 +49,11 @@ class Lemniscate:
             For orientation, each row represents the position's orientation (in rad).
         """
 
-        domain = np.linspace(0,2*math.pi,how_many_points)
+        domain = np.linspace(0,1,how_many_points)
 
-        lemniscate = np.array( (self.a_x*np.cos(domain), self.a_y*np.sin(2*domain)) ).T
-        lemniscate_velocity = np.array( (-self.a_x*np.sin(domain), 2*self.a_y*np.cos(2*domain)) ).T
-        lemniscate_acceleration = np.array( (-self.a_x*np.cos(domain), -4*self.a_y*np.sin(2*domain)) ).T
+        lemniscate = np.array( (self.a_x*np.cos(2*np.pi*self.f_x*domain), self.a_y*np.sin(2*2*np.pi*self.f_y*domain)) ).T
+        lemniscate_velocity = np.array( (-self.a_x*2*np.pi*self.f_x*np.sin(2*np.pi*self.f_x*domain), 2*self.a_y*2*np.pi*self.f_y*np.cos(2*2*np.pi*self.f_y*domain)) ).T
+        lemniscate_acceleration = np.array( (-self.a_x*4*np.power(np.pi*self.f_x,2)*np.cos(2*np.pi*self.f_x*domain), -self.a_y*16*np.power(np.pi*self.f_x,2)*np.sin(2*2*np.pi*self.f_y*domain)) ).T
 
         lemniscate_orientation = np.arctan2(lemniscate_velocity[:,1],lemniscate_velocity[:,0])
 
