@@ -13,8 +13,8 @@ class Lemniscate:
         Args:
             a_x (float): The X amplitude (how far the curve goes horizontally)
             a_y (float): The Y amplitude (how far the curve goes vertically)
-            f_x (float): The frequency (cicles/second) of the X component. Ideally it equals f_y.
-            f_y (float): The frequency (cicles/second) of the Y component. Ideally it equals f_x.
+            f_x (float): The frequency (cicles/second) of the X component. Ideally it equals f_y. (Default:30)
+            f_y (float): The frequency (cicles/second) of the Y component. Ideally it equals f_x. (Default:30)
 
         Raises:
             ValueError: raised when a_x is not inside the interval (0 , 2.5]
