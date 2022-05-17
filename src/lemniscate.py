@@ -4,7 +4,7 @@ import math
 import numpy as np
 
 class Lemniscate:
-    def __init__(self, a_x, a_y, f_x, f_y):
+    def __init__(self, a_x, a_y, f_x=30, f_y=30):
         """This class is used to compute a lemniscate curve. It ranges from -a_x to a_x horizontally, 
             and from -a_y to a_y vertically. The movement of a particle over the curve is such that 
             it returns to its original horizontal coordinate in 1/f_x units of time, and to its original
@@ -20,6 +20,7 @@ class Lemniscate:
             ValueError: raised when a_x is not inside the interval (0 , 2.5]
             ValueError: raised when a_y is not inside the interval (0 , 2.5]
         """
+        
         if a_x > 0 and a_x <= 2.5:
             self.a_x = a_x
         else:
