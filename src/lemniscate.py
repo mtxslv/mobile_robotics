@@ -59,3 +59,12 @@ class Lemniscate:
         lemniscate_orientation = np.arctan2(lemniscate_velocity[:,1],lemniscate_velocity[:,0])
 
         return lemniscate, lemniscate_velocity, lemniscate_acceleration, lemniscate_orientation
+    
+    def get_point(self, domain):
+        lemniscate = np.array( (self.a_x*np.cos(2*np.pi*self.f_x*domain), self.a_y*np.sin(2*2*np.pi*self.f_y*domain)) ).T
+        lemniscate_velocity = np.array( (-self.a_x*2*np.pi*self.f_x*np.sin(2*np.pi*self.f_x*domain), 2*self.a_y*2*np.pi*self.f_y*np.cos(2*2*np.pi*self.f_y*domain)) ).T
+        lemniscate_acceleration = np.array( (-self.a_x*4*np.power(np.pi*self.f_x,2)*np.cos(2*np.pi*self.f_x*domain), -self.a_y*16*np.power(np.pi*self.f_x,2)*np.sin(2*2*np.pi*self.f_y*domain)) ).T
+
+        lemniscate_orientation = np.arctan2(lemniscate_velocity[1],lemniscate_velocity[0])
+
+        return lemniscate, lemniscate_velocity, lemniscate_acceleration, lemniscate_orientation
