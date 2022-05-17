@@ -61,6 +61,8 @@ def robot_run(clientID, left_motor_handle, right_motor_handle, left_target_veloc
 def send_points_to_sim(points, clientID, sleep_time = 0.07):
     #the bigger the sleep time the more accurate the points are 
     #placed but you have to be very patient :D
+    i = 0
+    print('Sending Points ...')
     for p in points:
         packedData=sim.simxPackFloats(p.flatten())
         raw_bytes = (ctypes.c_ubyte * len(packedData)).from_buffer_copy(packedData) 
@@ -69,5 +71,6 @@ def send_points_to_sim(points, clientID, sleep_time = 0.07):
         if returnCode != 0 and returnCode != 1:
             print(f'Point {p.round(3)} not sent. Error {returnCode}')
         else:
-            print(p)
+            i = i + 1
         time.sleep(sleep_time)
+    print(f'Points sent: {i}')
