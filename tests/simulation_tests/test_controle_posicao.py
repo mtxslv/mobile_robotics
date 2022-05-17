@@ -20,8 +20,6 @@ clientID = connect_2_sim()
 test_connection(clientID)
 
 # Enviar pontos do Caminho Gerado
-ponto = np.array([[-1,-1]])
-send_points_to_sim(ponto, clientID=clientID)
 #send_points_to_sim([p[1:3] for p in points], clientID=clientID)
 
 left_motor_handle, right_motor_handle = get_pioneer3DX_motor_handles_(clientID)
@@ -40,12 +38,15 @@ print(pos_robo)
 print(ang_robo)
 
 #PONTOS FINAIS
-xf = -1
-yf = -1
+xf = 1
+yf = -2
+
+ponto = np.array([[xf,yf]])
+send_points_to_sim(ponto, clientID=clientID)
 
 #Ganhos do controlador
-k_theta = 0.09
-k_l = 0.05
+k_theta = 0.2
+k_l = 0.1
 
 #Dados do robô
 rd = 0.195/2
@@ -70,6 +71,9 @@ while True:
     delta_l_ref = np.sqrt((delta_x)**2 + (delta_y)**2)     
     delta_theta = theta_ref - theta_robo
 
+    if(delta_l_ref <= 0.1):
+        break
+
     #Caluclo do delta L
     delta_l = delta_l_ref * np.cos(delta_theta)
 
@@ -84,8 +88,7 @@ while True:
     txt = [np.array(pos_robo).round(2), np.array(ang_robo).round(2), delta_l.round(2), we.round(2), wd.round(2)]
     print(txt, robot_run(clientID, left_motor_handle, right_motor_handle, we, wd))
         
-    if(delta_l_ref <= 0.1):
-        break
+    
 
 
 print(robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0))
