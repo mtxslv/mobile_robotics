@@ -26,7 +26,6 @@ test_connection(clientID)
 
 left_motor_handle, right_motor_handle = get_pioneer3DX_motor_handles_(clientID)
 
-
 return_value_left_motor_control, return_value_right_motor_control = robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0)
 
 errorCode, robo = sim.simxGetObjectHandle(clientID=clientID, objectName="./PioneerP3DX",
@@ -46,7 +45,7 @@ lista_pontos = [[1.5,-1.5], [1.5,0], [1.5,1.5],
 
 #Ganhos do controlador
 k_theta = 0.25
-k_l = 0.1
+k_l = 0.15
 
 #Dados do robô
 rd = 0.195/2
@@ -62,7 +61,7 @@ for ponto in lista_pontos:
 
     p = np.array([[xf,yf]])
     send_points_to_sim(p, clientID=clientID)
-    print(f'Going to point {ponto} ')
+    print(f'\nGoing to point {ponto}')
     start = timeit.default_timer()
     while True:
         error_pos, pos_robo = sim.simxGetObjectPosition(clientID, robo, -1, sim.simx_opmode_buffer)
@@ -101,6 +100,6 @@ for ponto in lista_pontos:
         #print(txt, ret)
             
     stop = timeit.default_timer()
-    print(f'Time: {(stop - start).round(3)}s')
     robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0)
     print(f'Arrived at point {ponto} with pos {[px.round(4) for px in np.array(pos_robo)]}')
+    print(f'Time: {round(stop - start, 3)}s\n')

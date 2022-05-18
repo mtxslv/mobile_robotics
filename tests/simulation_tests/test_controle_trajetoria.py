@@ -1,7 +1,6 @@
 import sys
 import os
 
-
 import timeit
 import numpy as np
 sys.path.insert(0, os.path.abspath(
@@ -9,23 +8,13 @@ sys.path.insert(0, os.path.abspath(
 from utils import *
 from trajectory import CubicPolynomials
 import math
-
-# Gerar Caminho
-#pos_ini = [0,0,0]
-#pos_fin = [2.5,2.5,math.pi/4]
-
-#path = CubicPolynomials(pos_ini, pos_fin)
-#points = path.get_curve_points(20)
+from scipy import optimize
 
 # Conectar no Vrep
 clientID = connect_2_sim()
 test_connection(clientID)
 
-# Enviar pontos do Caminho Gerado
-#send_points_to_sim([p[1:3] for p in points], clientID=clientID)
-
 left_motor_handle, right_motor_handle = get_pioneer3DX_motor_handles_(clientID)
-
 
 return_value_left_motor_control, return_value_right_motor_control = robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0)
 
@@ -35,72 +24,83 @@ errorCode, robo = sim.simxGetObjectHandle(clientID=clientID, objectName="./Pione
 error_pos, pos_robo = sim.simxGetObjectPosition(clientID, robo, -1, sim.simx_opmode_streaming)
 error_ang, ang_robo = sim.simxGetObjectOrientation(clientID, robo, -1, sim.simx_opmode_streaming)
 
-print(robo)
-print(pos_robo)
-print(ang_robo)
+print(f'{robo}\n{pos_robo}\n{ang_robo}')
 
-#PONTOS FINAIS
-lista_pontos = [[1.5,-1.5], [1.5,0], [1.5,1.5], 
-                [-1.5,-1.5], [-1.5,0], [-1.5,1.5],
-                [0,0]]
+# Ganhos do controlador
+k_theta = 0.6
+k_l = 50
 
-#Ganhos do controlador
-k_theta = 0.25
-k_l = 0.1
-
-#Dados do robô
+# Dados do robô
 rd = 0.195/2
 re = 0.195/2
 B = 0.381
 
+# Velocidade 
+v = 0.05
 
+pos_ini = [0, 0, 0] 
+pos_fin = [1.7,2.0,math.pi/4] 
 
+# Gerar Caminho
+path = CubicPolynomials(pos_ini, pos_fin)
+points = path.get_curve_points(20)
 
-for ponto in lista_pontos:
-    xf = ponto[0]
-    yf = ponto[1]
+a, b = path.x_curve_parameters, path.y_curve_parameters
 
-    p = np.array([[xf,yf]])
-    send_points_to_sim(p, clientID=clientID)
-    print(f'Going to point {ponto} ')
-    start = timeit.default_timer()
-    while True:
-        error_pos, pos_robo = sim.simxGetObjectPosition(clientID, robo, -1, sim.simx_opmode_buffer)
-        error_ang, ang_robo = sim.simxGetObjectOrientation(clientID, robo, -1, sim.simx_opmode_buffer)
+# Enviar pontos do Caminho Gerado
+send_points_to_sim([p[1:3] for p in points], clientID=clientID)
 
-        theta_robo = ang_robo[2] #+ np.pi/2
+# Função de minimização de distancia
+def f(lmb, path, point):
+    return path.get_distance_between_points(lmb,point)
 
-        #Calculo dos Delta x e y 
-        delta_x = xf - pos_robo[0]
-        delta_y = yf - pos_robo[1]
+ErroL = []
+while True:
+    error_pos, pos_robo = sim.simxGetObjectPosition(clientID, robo, -1, sim.simx_opmode_buffer)
+    error_ang, ang_robo = sim.simxGetObjectOrientation(clientID, robo, -1, sim.simx_opmode_buffer)
 
-        #Calculo do theta estrela/Referencial
-        theta_ref = np.arctan2(delta_y,delta_x)     
+    lmb = optimize.fminbound(f, 0, 1, args=(path, pos_robo[0:2]))
+    ponto_curva = path.get_point(lmb)
+    Delta_l = path.get_distance_between_points(lmb, pos_robo[0:2])
+    lmb = round(lmb, 4)
 
+    Theta_robo = ang_robo[2]
+    
+    #raio de giro
+    dx = a[1] + 2*a[2]*lmb + 3*a[3]*(lmb**2)
+    dy = b[1] + 2*b[2]*lmb + 3*b[3]*(lmb**2)
+    d2x = 2*a[2] + 6*a[3]*lmb
+    d2y = 2*b[2] + 6*b[3]*lmb
+    r = ((((dx**2)+(dy**2))**1.5)/((d2y*dx)-(d2x*dy)))              
+    K = (1/r)
 
-        #Calculo do delta l do referencial e  delta theta
-        delta_l_ref = np.sqrt((delta_x)**2 + (delta_y)**2)     
-        delta_theta = theta_ref - theta_robo
+    #delta theta
+    theta_SF = np.arctan(dy/dx)
+    Delta_theta = Theta_robo - theta_SF
 
-        if(delta_l_ref <= 0.1):
-            break
+    #Garantir o sinal correto de Delta L 
+    theta_posicao_robo = np.arctan2(pos_robo[1],pos_robo[0]) #angulo de posicao do robo
+    theta_ref = np.arctan2(ponto_curva[1],ponto_curva[0]) #angulo da curva que está mais próxima ao robo
 
-        #Caluclo do delta L
-        delta_l = delta_l_ref * np.cos(delta_theta)
+    if(theta_ref>theta_posicao_robo): #Sinal do delta L
+        Delta_l = -Delta_l
+    
+    print(round(Delta_l,3), round(Delta_theta,3))
 
-        #Calculo da velocidade linear e angular
-        v = k_l * delta_l
-        w = k_theta * delta_theta
+    #Controle
+    u = -(k_theta*Delta_theta + (k_l*Delta_l*v*np.sin(Delta_theta)/Delta_theta))
 
-        #velocidades das juntas
-        wd = (v/rd) + (B/(2*rd))*w
-        we = (v/re) - (B/(2*re))*w
+    #Velocidade Angular
+    w = u + ((K*v*np.cos(Delta_theta))/(1-(K*Delta_l)))
 
-        #txt = [np.array(pos_robo).round(2), np.array(ang_robo).round(2), delta_l.round(2), we.round(2), wd.round(2)]
-        robot_run(clientID, left_motor_handle, right_motor_handle, we, wd)
-        #print(txt, ret)
-            
-    stop = timeit.default_timer()
-    print(f'Time: {(stop - start).round(3)}s')
-    robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0)
-    print(f'Arrived at point {ponto} with pos {[px.round(4) for px in np.array(pos_robo)]}')
+    #Velocidade das juntas
+    wd = (v/rd) + (B/(2*rd))*w
+    we = (v/re) - (B/(2*re))*w
+
+    robot_run(clientID, left_motor_handle, right_motor_handle, we, wd)
+
+    if lmb == 1:
+        break 
+    
+                
+robot_run(clientID, left_motor_handle, right_motor_handle, 0, 0)
