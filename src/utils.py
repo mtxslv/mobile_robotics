@@ -50,6 +50,22 @@ def get_pioneer3DX_motor_handles_(clientID):
         print("motor handles successfully retrieved!")
     return left_motor_handle,right_motor_handle
 
+def get_robot_motor_handles_(clientID, left_motor_path, right_motor_path):
+    # let's take the robot handles
+    error_code_left_motor, left_motor_handle =  sim.simxGetObjectHandle(clientID= clientID, 
+                                                                            objectName=left_motor_path,
+                                                                            operationMode=sim.simx_opmode_blocking)
+    error_code_right_motor, right_motor_handle =  sim.simxGetObjectHandle(clientID= clientID, 
+                                                                            objectName=right_motor_path,
+                                                                            operationMode=sim.simx_opmode_blocking)                                                                            
+    if error_code_left_motor!=0 or error_code_right_motor!=0:
+        print("dude! You've got an error on the motors!")
+        if error_code_left_motor == 8 or error_code_right_motor==8:
+            print("pal, I believe you only wrote the element address. Did you put ./ at the beginning? ")
+    else:
+        print("motor handles successfully retrieved!")
+    return left_motor_handle,right_motor_handle
+
 def robot_run(clientID, left_motor_handle, right_motor_handle, left_target_velocity, right_target_velocity):
     return_value_left_motor_control = sim.simxSetJointTargetVelocity(clientID=clientID,jointHandle=left_motor_handle,
                                                                 targetVelocity=left_target_velocity,operationMode=sim.simx_opmode_blocking)
