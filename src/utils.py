@@ -164,3 +164,10 @@ def get_bounding_box_corners_positions(client_id, object_handle, parameter_id_ty
     else:
         raise ValueError('Invalid parameter')
     return min_x, min_y, min_z, max_x, max_y, max_z
+
+def get_robot_configuration(client_id, robot_handle):
+    position_error, position_vector = sim.simxGetObjectPosition(client_id,robot_handle,-1, sim.simx_opmode_blocking)
+    angle_error, angle_vector = sim.simxGetObjectOrientation(client_id,robot_handle,-1, sim.simx_opmode_blocking)
+    if position_error+angle_error != 0:
+        raise RuntimeError('an inexpected error occurred when configuration were retrieved')
+    return position_vector, angle_vector
