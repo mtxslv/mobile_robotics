@@ -90,3 +90,77 @@ def send_points_to_sim(points, clientID, sleep_time = 0.07):
             i = i + 1
         time.sleep(sleep_time)
     print(f'Points sent: {i}')
+
+def get_bounding_box_corners_positions(client_id, object_handle, parameter_id_type='model'):
+    """This method returns the coordinates (on the robot's reference frame) of the two extreme corners of the bounding box.
+
+    Args:
+        client_id (int): an ID related to the running simulation
+        object_handle (int): an ID related to the simulated object whose bounding box's corners will be retrieved 
+        parameter_id_type (str, optional): can be "model" or "object". Defaults to 'model'.
+
+    Raises:
+        RuntimeError: this error is raised when any of the error codes is not zero (returned when the corners are retrieved).
+        RuntimeError: this error is raised when any of the error codes is not zero (returned when the corners are retrieved). 
+        ValueError: this error is raised when the parameter_id_type is not one of the two types showed.
+
+    Returns:
+        tuple: the coordinates of the two extreme corners of the bounding box (min_x, min_y, min_z, max_x, max_y, max_z).
+    """
+    if parameter_id_type == 'model':
+        error_min_x, min_x = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_min_x,
+                                operationMode=sim.simx_opmode_blocking)
+        error_min_y, min_y = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_min_y,
+                                operationMode=sim.simx_opmode_blocking)
+        error_min_z, min_z =  sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_min_z,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_x, max_x = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_max_x,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_y, max_y = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_max_y,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_z, max_z = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_modelbbox_max_z,
+                                operationMode=sim.simx_opmode_blocking)
+        if error_min_x+error_min_y+error_min_z+error_max_x+error_max_y+error_max_z != 0:
+            raise RuntimeError('an inexpected error occurred when corners were retrieved')
+    elif parameter_id_type == 'object':
+        error_min_x, min_x = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_min_x,
+                                operationMode=sim.simx_opmode_blocking)
+        error_min_y, min_y = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_min_y,
+                                operationMode=sim.simx_opmode_blocking)
+        error_min_z, min_z =  sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_min_z,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_x, max_x = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_max_x,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_y, max_y = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_max_y,
+                                operationMode=sim.simx_opmode_blocking)
+        error_max_z, max_z = sim.simxGetObjectFloatParameter(clientID=client_id,
+                                objectHandle= object_handle,
+                                parameterID=sim.sim_objfloatparam_objbbox_max_z,
+                                operationMode=sim.simx_opmode_blocking)
+        if error_min_x+error_min_y+error_min_z+error_max_x+error_max_y+error_max_z != 0:
+            raise RuntimeError('an inexpected error occurred when corners were retrieved')
+    else:
+        raise ValueError('Invalid parameter')
+    return min_x, min_y, min_z, max_x, max_y, max_z
