@@ -183,3 +183,24 @@ def get_configuration(client_id, object_handle):
     if position_error+angle_error != 0:
         raise RuntimeError('an inexpected error occurred when configuration were retrieved')
     return position_vector, angle_vector
+
+def get_object_handle(client_id, object_name):
+    """This method returns the object handle.
+
+    Args:
+        client_id (int): an ID related to the running simulation
+        object_name (int): object's name as seen in the hierarchy tree.
+
+    Raises:
+        RuntimeError: this error is raised when any of the error codes is not zero (returned when the handle is retrieved).
+
+    Returns:
+        handle_obj (int):  an ID related to the simulated object.
+    """
+    error_obj, handle_obj = sim.simxGetObjectHandle(clientID=client_id,
+                                                    objectName=object_name,
+                                                    operationMode=sim.simx_opmode_blocking)
+    if error_obj != 0:
+        print(f'error code = {error_obj}')
+        raise RuntimeError('something went wrong during object handle retrieval')
+    return handle_obj
