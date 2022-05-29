@@ -204,3 +204,43 @@ def get_object_handle(client_id, object_name):
         print(f'error code = {error_obj}')
         raise RuntimeError('something went wrong during object handle retrieval')
     return handle_obj
+
+def get_handlers_scene(client_id, scene_objects):
+    """This function returns the scene objects handlers.
+
+    Args:
+        client_id (int): an ID related to the running simulation
+        scene_objects (list): a list of scene objects' names whose handlers should be retrieved.
+
+    Returns:
+        list_of_handlers (list): a list of dictionary. Each dictionary has the object name and the handler.
+    """
+    list_of_handlers = []
+    for element in scene_objects:
+        current_obj_handle = get_object_handle(client_id=client_id, object_name = element)
+        current_dict = {element: current_obj_handle}
+        list_of_handlers.append(current_dict)
+    return list_of_handlers
+
+def get_scene_objects_info(client_id, scene_objects):
+    """This function return compilled information regarding the scene's objects.
+
+    Args:
+        client_id (int):  an ID related to the running simulation
+        scene_objects (list): a list of scene objects' names whose handlers should be retrieved.
+
+    Returns:
+        info_list (list of dictionary): a list of dictionary. Each dictionary has the object name of the object, its handler, and its configuration (position and orientation).
+    """
+    info_list = []
+    for element in scene_objects:
+        current_obj_handle = get_object_handle(client_id=client_id, 
+                                               object_name=element)
+        position, angle = get_configuration(client_id=client_id,
+                                            object_handle=current_obj_handle)
+        current_dict = {'object_name': element,
+                        'object_handler': current_obj_handle,
+                        'object_position': position,
+                        'object_orientation':angle}
+        info_list.append(current_dict)
+    return info_list
