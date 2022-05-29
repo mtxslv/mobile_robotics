@@ -1,4 +1,5 @@
 import numpy as np
+from utils import *
 
 def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
     """This method returns the normals on a polygon's horizontal faces, considering one of the faces is aligned with the X axis.
@@ -86,3 +87,29 @@ def get_global_position(point_in_robot_frame, euler_angles, frame_origin_positio
     point_position = point_in_global_frame + frame_origin_position
 
     return point_position
+
+def get_bounding_box_corners_local_coordinates(client_id, object_handle, parameter_id_type='model', consider_up_layer = False):
+
+    """This method returns the coordinates of the bounding box corners, in the local reference frame. The order starts at the top right point and goes anti-clockwise until the down right point.
+
+    Returns:
+        tuple: vectors from point 1 to point 8
+    """
+    # the idea is to get the coordinates and return it anti-clockwise (to match mapping algorithm)
+    x_min, y_min, z_min, x_max, y_max, z_max = get_bounding_box_corners_positions(client_id,object_handle,parameter_id_type)
+
+    # down layer points
+    point_1 = np.array([x_max,y_max,z_min])
+    point_2 = np.array([x_min,y_max,z_min])
+    point_3 = np.array([x_min,y_min,z_min])
+    point_4 = np.array([x_max,y_min,z_min])
+    
+    if consider_up_layer:
+        point_5 = np.array([x_max,y_max,z_max])
+        point_6 = np.array([x_min,y_max,z_max])
+        point_7 = np.array([x_min,y_min,z_max])
+        point_8 = np.array([x_max,y_min,z_max])
+        return point_1, point_2, point_3, point_4, point_5, point_6, point_7, point_8
+    
+    else:
+        return point_1, point_2, point_3, point_4
