@@ -136,3 +136,19 @@ def map_local_coordinates_to_global_coordinates(local_coordinates, euler_angles,
         global_point = get_global_position(local_point,euler_angles,frame_origin_position)
         global_points.append(global_point)
     return global_points
+
+def convert_angle_to_0_2pi_interval(angle): # https://stackoverflow.com/questions/58627711/get-angle-into-range-0-2pi-python
+    new_angle = np.arctan2(np.sin(angle), np.cos(angle))
+    if new_angle < 0:
+        new_angle = abs(new_angle) + 2 * (np.pi - abs(new_angle))
+    return new_angle
+
+def is_angle_between(v_1,v,v_2):
+    v_1 = convert_angle_to_0_2pi_interval(v_1)
+    v = convert_angle_to_0_2pi_interval(v)
+    v_2 = convert_angle_to_0_2pi_interval(v_2)
+
+    if (v_1 < v and v < v_2) or (v_2 < v and v < v_1):  
+        return True
+    else:
+        return False
