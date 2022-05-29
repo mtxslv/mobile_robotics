@@ -246,7 +246,7 @@ def get_scene_objects_info(client_id, scene_objects):
     return info_list
 
 def split_robot_from_info_list(info_list, robot_name):
-    """This function separates the list of objects' dictionary from the robot dictionary. It does not alter the original list variable.
+    """This function separates the list of objects' dictionary from the robot dictionary. It does not alter the original list variable. Notice info_list_copy is a list containing information about the obstacles.
 
     Args:
         info_list (list): robot info, the output of get_scene_objects_info()
