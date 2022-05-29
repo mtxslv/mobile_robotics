@@ -124,9 +124,9 @@ def map_local_coordinates_to_global_coordinates(local_coordinates, euler_angles,
     """This method takes coordinates in a local reference frame (robot, i.e.) and map them to the global reference frame.
 
     Args:
-        local_coordinates (tuple): points' vectors from point 1 to point 8
-        euler_angles (list): the phi, theta, and psi (in this order) euler angles that map object's frame to global frame.
-        frame_origin_position (numpy ndarray): the origin of object's reference frame (same shape as point_in_robot_frame), described in global frame.
+        local_coordinates (tuple): points in a local reference frame 
+        euler_angles (list): the phi, theta, and psi (in this order) euler angles that map local frame to global frame.
+        frame_origin_position (numpy ndarray): the origin of local reference frame (same shape as point_in_robot_frame), described in global frame.
 
     Returns:
         global_points (list): a list containing the points in the global frame. The order of points follow the same order as local_coordinates. 
