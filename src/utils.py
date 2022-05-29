@@ -244,3 +244,29 @@ def get_scene_objects_info(client_id, scene_objects):
                         'object_orientation':angle}
         info_list.append(current_dict)
     return info_list
+
+def split_robot_from_info_list(info_list, robot_name):
+    """This function separates the list of objects' dictionary from the robot dictionary. It does not alter the original list variable.
+
+    Args:
+        info_list (list): robot info, the output of get_scene_objects_info()
+        robot_name (string): the object_name (dictionary keyword) related to the robot
+
+    Raises:
+        RuntimeError: raised when the robot_name is not found in info_list
+
+    Returns:
+        (tuple): the list of dictionaries containing objects' information and the dictionary containing the robot information, in this order.
+    """
+    info_robot = info_list[0] # this assignment has no effect in code. It is meant for assigning a value to info_robot outside of the for loop scope 
+    robot_key_was_not_found = True
+    info_list_copy = info_list.copy()
+    for element in info_list_copy:
+        if element['object_name'] == robot_name:
+            robot_key_was_not_found = False    
+            info_robot_position = info_list_copy.index(element)
+            info_robot = element
+            del info_list_copy[info_robot_position]
+    if robot_key_was_not_found:
+        raise RuntimeError("Robot name was not found")
+    return info_list_copy, info_robot
