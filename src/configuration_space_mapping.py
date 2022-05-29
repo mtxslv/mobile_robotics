@@ -1,3 +1,5 @@
+import numpy as np
+
 def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
     """This method returns the normals on a polygon's horizontal faces, considering one of the faces is aligned with the X axis.
 
@@ -26,3 +28,41 @@ def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
 
     return x_angle, y_angle, negative_x_angle, negative_y_angle
 
+import numpy as np
+def rotation_matrix_from_euler_angles(phi=0, theta=0, psi=0, inverse = False): #angles in radians
+    """Computes the transformation matrix R = R_z(phi)*R_y(theta)*R_x(psi) or inv(R). R is the rotation matrix associated with the euler angles phi, theta and psi. 
+
+    Args:
+        phi (int, optional): rotation, in rad, around Z axis. Defaults to 0.
+        theta (int, optional): rotation, in rad, around Y axis. Defaults to 0.
+        psi (int, optional): rotation, in rad, around X axis. Defaults to 0.
+        inverse (bool, optional): if the inverse matrix should be returned instead of the regular matrix. Defaults to False.
+
+    Raises:
+        RuntimeError: raised when the inverse matrix is chosen, but it has no inverse (it is calculated numerically).
+
+    Returns:
+        matrix (numpy NDarray): the rotation matrix or its inverse (depending on the boolean inverse parameter)
+    """
+    r_11 = np.cos(theta)*np.cos(phi)
+    r_12 = np.sin(psi)*np.sin(theta)*np.cos(phi)-np.cos(psi)*np.sin(phi)
+    r_13 = np.cos(psi)*np.sin(theta)*np.cos(phi)+np.sin(psi)*np.sin(phi)
+    r_21 = np.cos(theta)*np.sin(phi)
+    r_22 = np.sin(psi)*np.sin(theta)*np.sin(phi)+np.cos(psi)*np.cos(phi)
+    r_23 = np.cos(psi)*np.sin(theta)*np.sin(phi)-np.sin(psi)*np.cos(phi)
+    r_31 = -np.sin(theta)
+    r_32 = np.sin(psi)*np.cos(theta)
+    r_33 = np.cos(psi)*np.cos(theta)
+    matrix_list = [[r_11, r_12, r_13],
+                   [r_21, r_22, r_23],
+                   [r_31, r_32, r_33]]
+    rotation_matrix = np.array(matrix_list)
+    if inverse == True:
+        if np.linalg.det(rotation_matrix) == 0:
+            raise RuntimeError("Null Determinant")
+        else:
+            inverse_rotation_matrix = np.linalg.inv(rotation_matrix)
+            return inverse_rotation_matrix
+    else:
+        return rotation_matrix
+    
