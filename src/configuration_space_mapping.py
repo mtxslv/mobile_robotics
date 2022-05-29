@@ -92,6 +92,12 @@ def get_bounding_box_corners_local_coordinates(client_id, object_handle, paramet
 
     """This method returns the coordinates of the bounding box corners, in the local reference frame. The order starts at the top right point and goes anti-clockwise until the down right point.
 
+    Args:
+        client_id (int): an ID related to the running simulation
+        object_handle (int): an ID related to the simulated object whose bounding box's corners will be retrieved 
+        parameter_id_type (str, optional): can be "model" or "object". Defaults to 'model'.
+        consider_up_layer (boolean, optional): this indicates if the up layer points will be returned. Defaults to "False".
+
     Returns:
         tuple: vectors from point 1 to point 8
     """
