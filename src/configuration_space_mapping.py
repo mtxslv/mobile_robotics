@@ -119,3 +119,20 @@ def get_bounding_box_corners_local_coordinates(client_id, object_handle, paramet
     
     else:
         return point_1, point_2, point_3, point_4
+
+def map_local_coordinates_to_global_coordinates(local_coordinates, euler_angles, frame_origin_position):
+    """This method takes coordinates in a local reference frame (robot, i.e.) and map them to the global reference frame.
+
+    Args:
+        local_coordinates (tuple): points' vectors from point 1 to point 8
+        euler_angles (list): the phi, theta, and psi (in this order) euler angles that map object's frame to global frame.
+        frame_origin_position (numpy ndarray): the origin of object's reference frame (same shape as point_in_robot_frame), described in global frame.
+
+    Returns:
+        global_points (list): a list containing the points in the global frame. The order of points follow the same order as local_coordinates. 
+    """
+    global_points = []
+    for local_point in local_coordinates:
+        global_point = get_global_position(local_point,euler_angles,frame_origin_position)
+        global_points.append(global_point)
+    return global_points
