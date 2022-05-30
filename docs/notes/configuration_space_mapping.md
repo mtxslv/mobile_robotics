@@ -150,6 +150,6 @@ There is a small theoretical behaviour on how we check the angles between. Notic
 In order to check if a given angle is between other two, I literally check if it is between. That is it. Naturally, a problem arises here:
 - an angle of 0 rad wouldn't be account as "in between" the angles 1.57 rad and 6 rad, for example.
 
-**What to do next? I really recommend looking the indexes. I'm unsure if they make sense.**
+**What to do next? I really recommend looking the algorithm's corner indexes. I'm unsure if they make sense.**
 
 **Do the corner indexes I'm dealing with inside the loop match the points to be manipulated? I'm not sure**
