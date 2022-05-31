@@ -27,7 +27,7 @@ def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
         negative_x_angle = euler_z_angle + pi
         negative_y_angle = euler_z_angle + pi/2 + pi
 
-    return x_angle, y_angle, negative_x_angle, negative_y_angle
+    return y_angle, negative_x_angle, negative_y_angle, x_angle
 
 def rotation_matrix_from_euler_angles(phi=0, theta=0, psi=0, inverse = False): #angles in radians
     """Computes the transformation matrix R = R_z(phi)*R_y(theta)*R_x(psi) or inv(R). R is the rotation matrix associated with the euler angles phi, theta and psi. This matrix maps the object frame to the global frame.
