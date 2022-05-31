@@ -150,6 +150,23 @@ There is a small theoretical behaviour on how we check the angles between. Notic
 In order to check if a given angle is between other two, I literally check if it is between. That is it. Naturally, a problem arises here:
 - an angle of 0 rad wouldn't be account as "in between" the angles 1.57 rad and 6 rad, for example.
 
+# Next Steps
 **What to do next? I really recommend looking the algorithm's corner indexes. I'm unsure if they make sense.**
 
 **Do the corner indexes I'm dealing with inside the loop match the points to be manipulated? I'm not sure**
+
+# A New Approach (30th Mai Updates)
+
+This time I tried a new approach. Since what we need is to check which orientation is between other two, I can use a sorted table to represent the unitary circle.
+
+How does it work? I already have the normals (for the obstacle and robot both). Let's put them in a table's column. I know the order of the normals (1st, 2nd, 3rd, and so on). They go into another table column. And obviously it is known which normals belong to which object (obstacle or robot). This information goes into the third and last column.
+
+The next step is to sort the table rows such that the orientation is sorted in an increasing order. 
+
+The core part of the scan algorithm is to check if an object's normal is between the other object's pair of normals. Then I create a "scan window" centered in the iterator _it_ and move this iterator from the second table's element untill it gets to the second last one.
+
+In order to check the "in between" condition, we just need to see if, in each window, the middle element is different from the other two, and that the other two are actually equal.
+
+Another change needed was to **change the order of returned normals**, such that the x_min is the last one to be returned in the tuple. Why so? It was necessary to make the returned normals match with the corner points order according to what is on the slides. That is, the _i th_ normal vector is always at the "anti-clockwise" side of the _i th_ point.
+
+**explain how the new_vertice is computed and just then explain a_index and b_index**
