@@ -13,7 +13,7 @@ def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
         ValueError: raised when the Z euler angle is not within [-2pi, 2pi]
 
     Returns:
-        tuple: x_angle, y_angle, negative_x_angle, and negative_y_angle. 
+        tuple: y_angle, negative_x_angle, negative_y_angle, and x_angle. 
     """
     if polygon_type != 'cubic':
         raise ValueError("only cubic polygons supported so far")
