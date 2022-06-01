@@ -170,3 +170,13 @@ In order to check the "in between" condition, we just need to see if, in each wi
 Another change needed was to **change the order of returned normals**, such that the x_min is the last one to be returned in the tuple. Why so? It was necessary to make the returned normals match with the corner points order according to what is on the slides. That is, the _i th_ normal vector is always at the "anti-clockwise" side of the _i th_ point.
 
 **explain how the new_vertice is computed and just then explain a_index and b_index**
+
+# 31 May updates
+
+When the class ended, I wanted to ask him about the mapping algorithm. He explained me another way of running it instead.
+
+The main idea is that, for each normal, we just need to find the next normal whose object is not the current one. That is, consider the robot. Suppose we have its first normal. The idea is to find the next obstacle's normal. Then, we just need to do: obstacle point minus robot normal (the ones we were dealing with).
+
+This is already coded. Look in `sketching_configuration_mapping.ipynb`, section _Trying to create the mapping algorithm: 2nd approach_.
+
+The result makes a little more sense, but I haven't found out why.
