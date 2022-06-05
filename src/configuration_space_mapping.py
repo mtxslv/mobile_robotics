@@ -14,7 +14,7 @@ def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
         ValueError: raised when the Z euler angle is not within [-2pi, 2pi]
 
     Returns:
-        tuple: y_angle, negative_x_angle, negative_y_angle, and x_angle. 
+        tuple: y_angle, negative_x_angle, negative_y_angle, and x_angle . 
     """
     if polygon_type != 'cubic':
         raise ValueError("only cubic polygons supported so far")
@@ -170,7 +170,19 @@ def mapping(client_id, scene_objects, robot_name):
 
     global_coordin_corners_robot = map_local_coordinates_to_global_coordinates(local_c_robot, orientation_robot, position_robot)
 
-    normals_robot = get_normals_orientation(robot_information['object_orientation'][2])
+    robot_handle = sim.simxGetObjectHandle(client_id, robot_name,sim.simx_opmode_blocking)
+    normals_robot = get_normals_orientation(sim.simxGetObjectOrientation(client_id,robot_handle[1],-1,sim.simx_opmode_blocking)[1][2])
+
+    
+    temporary_normals_robot = []
+    for normal_robot_element in normals_robot:
+        temporary_normals_robot.append(convert_angle_to_0_2pi_interval(normal_robot_element))
+
+    normals_robot = temporary_normals_robot
+    
+    print(f'points bounding box around robot: {global_coordin_corners_robot}')
+    print(f'normals bounding box around robot: {normals_robot}')
+
 
     # mirroring the normal vectors
     negative_delocation = (np.pi,np.pi,np.pi,np.pi)
@@ -206,6 +218,9 @@ def mapping(client_id, scene_objects, robot_name):
 
     normals_cuboid = temporary_normals_cuboid
 
+    print(f'points bounding box around cuboid0: {global_coordinates_cuboid}')
+    print(f'normals bounding box around cuboid0: {normals_cuboid}')
+
     # I need to check if a given normal is between other two, right? Then I can use a table or something to do so
     # How? On one column I gonna put the normals of the robot and of the obstacle.
     # On other column I'll indicate the owner of the normal: robot or obstacle
@@ -223,7 +238,7 @@ def mapping(client_id, scene_objects, robot_name):
     dframe_normals = pd.DataFrame({'normals': normals_series, 'normal_order': normals_order, 'owner':['r','r','r','r','o','o','o','o']})
     dframe_normals.sort_values(by='normals', inplace=True)
 
-        # PAblo showed me my algorith was wrong. Here it goes the algorithm corrected
+    # PAblo showed me my algorith was wrong. Here it goes the algorithm corrected
     vertices_list = []
     for it in range(0,dframe_normals.shape[0]-1):
         """
