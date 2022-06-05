@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from utils import *
 
 def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
@@ -152,3 +153,112 @@ def is_angle_between(v_1,v,v_2):
         return True
     else:
         return False
+
+def mapping(client_id, scene_objects, robot_name):
+
+    listazinha = get_scene_objects_info(client_id, scene_objects)
+    info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
+
+
+    # ROBOT STUFF
+    # Now that I have the objects handlers, I need to get the robot handler so I can retrieve its global coordinates and normals
+    local_c_robot = get_bounding_box_corners_local_coordinates(client_id, robot_information['object_handler'])
+
+    position_robot = robot_information['object_position']
+    orientation_robot = robot_information['object_orientation']
+    orientation_robot.reverse() # notice that the orientation vector is reversed (theta is naturally the last, but we need to have it as the first value)
+
+    global_coordin_corners_robot = map_local_coordinates_to_global_coordinates(local_c_robot, orientation_robot, position_robot)
+
+    normals_robot = get_normals_orientation(robot_information['object_orientation'][2])
+
+    # mirroring the normal vectors
+    negative_delocation = (np.pi,np.pi,np.pi,np.pi)
+    normals_robot = [sum(x) for x in zip(normals_robot,negative_delocation)]
+
+    temporary_normals_robot = []
+    for normal_robot_element in normals_robot:
+        temporary_normals_robot.append(convert_angle_to_0_2pi_interval(normal_robot_element))
+
+    normals_robot = temporary_normals_robot
+
+
+    # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
+    # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
+
+    cuboid_number = 0
+
+    # OBSTACLE
+
+    local_c_cuboid = get_bounding_box_corners_local_coordinates(client_id, listazinha[cuboid_number]['object_handler'])
+
+    orientation_cuboid = listazinha[cuboid_number]['object_orientation']
+    orientation_cuboid.reverse() # notice that the orientation vector is reversed (theta is naturally the last, but we need to have it as the first value)
+    position_cuboid = listazinha[cuboid_number]['object_position']
+
+    global_coordinates_cuboid = map_local_coordinates_to_global_coordinates(local_c_cuboid, orientation_cuboid, position_cuboid)
+
+    normals_cuboid = get_normals_orientation(listazinha[cuboid_number]['object_orientation'][2])
+
+    temporary_normals_cuboid = []
+    for normal_cuboid_element in normals_cuboid:
+        temporary_normals_cuboid.append(convert_angle_to_0_2pi_interval(normal_cuboid_element))
+
+    normals_cuboid = temporary_normals_cuboid
+
+    # I need to check if a given normal is between other two, right? Then I can use a table or something to do so
+    # How? On one column I gonna put the normals of the robot and of the obstacle.
+    # On other column I'll indicate the owner of the normal: robot or obstacle
+    # On the third column I'll indicate the normal order (first normal: right face, second one: up face, etc)
+    # Now I can order the rows according to the normal order: increasing
+    # Then I will scan the lines to see if a given normal lies between other two
+    normal_robot_series = pd.Series(normals_robot, name='normals')
+    normal_robot_name_series = pd.Series([1,2,3,4], name= 'normal_order')
+    normal_cuboid_series = pd.Series(normals_cuboid, name='normals')
+    normal_cuboid_name_series = pd.Series([1,2,3,4], name= 'normal_order')
+
+    normals_series = pd.concat([normal_robot_series, normal_cuboid_series], ignore_index=True)
+    normals_order = pd.concat([normal_robot_name_series, normal_cuboid_name_series], ignore_index=True)
+
+    dframe_normals = pd.DataFrame({'normals': normals_series, 'normal_order': normals_order, 'owner':['r','r','r','r','o','o','o','o']})
+    dframe_normals.sort_values(by='normals', inplace=True)
+
+        # PAblo showed me my algorith was wrong. Here it goes the algorithm corrected
+    vertices_list = []
+    for it in range(0,dframe_normals.shape[0]-1):
+        """
+        print(f'it = {it}')
+        print(dframe_normals.iloc[it-1:it+2,-1])
+        print(is_between(dframe_normals.iloc[it-1:it+2,-1].values))
+        print(" ")
+        """
+        #print(dframe_normals.iloc[it,-1])
+        #print(dframe_normals.iloc[it+1:,-1])
+        next_different = dframe_normals.iloc[it+1:,-1].ne(dframe_normals.iloc[it,-1]).idxmax() 
+        current_element = dframe_normals.iloc[it,-1]
+        next_diff_element = dframe_normals.iloc[next_different,-1]
+
+        if next_diff_element != current_element:
+            if dframe_normals.iloc[it,-1] == 'r':
+                a_index = dframe_normals.iloc[it,1]
+                b_index = dframe_normals.iloc[next_different,1]
+            else:
+                a_index = dframe_normals.iloc[next_different,1]
+                b_index = dframe_normals.iloc[it,1]    
+            new_vertice = global_coordinates_cuboid[b_index-1]-global_coordin_corners_robot[a_index-1]
+            vertices_list.append(new_vertice)
+
+    if dframe_normals.iloc[0,-1] != dframe_normals.iloc[-1,-1]:
+        if dframe_normals.iloc[-1,-1] == 'r':
+            a_index = dframe_normals.iloc[-1,1]
+            b_index = dframe_normals.iloc[0,1]
+        else:
+            a_index = dframe_normals.iloc[0,1]
+            b_index = dframe_normals.iloc[-1,1]    
+        new_vertice = global_coordinates_cuboid[b_index-1]-global_coordin_corners_robot[a_index-1]
+        vertices_list.append(new_vertice)
+
+            
+        #if next_different != it
+    #  print(f'it = {it}, current_element = {current_element} | next_different_index = {next_different}, next_different_element = {next_diff_element}')
+    return vertices_list
