@@ -220,7 +220,6 @@ def mapping(client_id, scene_objects, robot_name):
     print(f'points bounding box around robot: {global_coordin_corners_robot}')
     print(f'normals bounding box around robot: {normals_robot}')
 
-
     # mirroring the normal vectors
     negative_delocation = (np.pi,np.pi,np.pi,np.pi)
     normals_robot = [sum(x) for x in zip(normals_robot,negative_delocation)]
@@ -279,5 +278,14 @@ def mapping(client_id, scene_objects, robot_name):
     print(dframe_normals)
     print(" ")
     
-    vertices_list = mapping_loop(dframe=dframe_normals, corners_robot=global_coordin_corners_robot,corners_obstacle=global_coordinates_cuboid)
+    print(" ")
+    print(" ")
+    print(" ")
+    print("arguments going inside mapping loop...")
+    print(f'dframe ={dframe_normals}')
+    print(f'corners_robot = {global_coordin_corners_robot}')
+    print(f'corners_obstacle = {global_coordinates_cuboid}')
+    vertices_list = mapping_loop(dframe=dframe_normals, 
+                                 corners_robot=global_coordin_corners_robot,
+                                 corners_obstacle=global_coordinates_cuboid)
     return vertices_list
