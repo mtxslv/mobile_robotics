@@ -154,6 +154,43 @@ def is_angle_between(v_1,v,v_2):
     else:
         return False
 
+def mapping_loop(dframe, corners_robot, corners_obstacle):
+    vertices_list = []
+    for it in range(0,dframe.shape[0]-1):
+        next_different = dframe.iloc[it+1:,-1].ne(dframe.iloc[it,-1]).idxmax()
+        #print(f'it = {it} | next dif = {next_different}')
+        current_owner = dframe.iloc[it,-1]
+        next_different_owner = dframe.iloc[next_different,-1]
+        if current_owner != next_different_owner:
+            if current_owner == 'r':
+                a_index = dframe.iloc[it,1]
+                b_index = dframe.iloc[next_different,1]
+            else:
+                a_index = dframe.iloc[next_different,1]
+                b_index = dframe.iloc[it,1]
+            print(f'{current_owner} -> {next_different_owner} | b{b_index}-a{a_index}')                
+            new_point = corners_obstacle[b_index-1] - corners_robot[a_index-1]
+            # vertices_list.append(np.round(new_point,2))
+            vertices_list.append(new_point)
+
+    # this accounts for the circle ending
+    current_owner = dframe.iloc[-1,-1]
+    next_different = dframe.iloc[0:-1,-1].ne(dframe.iloc[-1,-1]).idxmax()
+    next_different_owner = dframe.iloc[next_different,-1]
+    if current_owner != next_different_owner:
+        if current_owner == 'r':
+            a_index = dframe.iloc[-1,1]
+            b_index = dframe.iloc[next_different,1]
+        else:
+            a_index = dframe.iloc[next_different,1]
+            b_index = dframe.iloc[-1,1]
+        print(f'{current_owner} -> {next_different_owner} | b{b_index}-a{a_index}')                
+        new_point = corners_obstacle[b_index-1] - corners_robot[a_index-1]
+        # vertices_list.append(np.round(new_point,2))
+        vertices_list.append(new_point)
+    return vertices_list
+
+
 def mapping(client_id, scene_objects, robot_name):
 
     listazinha = get_scene_objects_info(client_id, scene_objects)
@@ -194,7 +231,8 @@ def mapping(client_id, scene_objects, robot_name):
 
     normals_robot = temporary_normals_robot
 
-
+    print(f'inverted normals bounding box around robot: {normals_robot}')
+    print(" ")
     # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
     # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
 
@@ -237,43 +275,9 @@ def mapping(client_id, scene_objects, robot_name):
 
     dframe_normals = pd.DataFrame({'normals': normals_series, 'normal_order': normals_order, 'owner':['r','r','r','r','o','o','o','o']})
     dframe_normals.sort_values(by='normals', inplace=True)
-
-    # PAblo showed me my algorith was wrong. Here it goes the algorithm corrected
-    vertices_list = []
-    for it in range(0,dframe_normals.shape[0]-1):
-        """
-        print(f'it = {it}')
-        print(dframe_normals.iloc[it-1:it+2,-1])
-        print(is_between(dframe_normals.iloc[it-1:it+2,-1].values))
-        print(" ")
-        """
-        #print(dframe_normals.iloc[it,-1])
-        #print(dframe_normals.iloc[it+1:,-1])
-        next_different = dframe_normals.iloc[it+1:,-1].ne(dframe_normals.iloc[it,-1]).idxmax() 
-        current_element = dframe_normals.iloc[it,-1]
-        next_diff_element = dframe_normals.iloc[next_different,-1]
-
-        if next_diff_element != current_element:
-            if dframe_normals.iloc[it,-1] == 'r':
-                a_index = dframe_normals.iloc[it,1]
-                b_index = dframe_normals.iloc[next_different,1]
-            else:
-                a_index = dframe_normals.iloc[next_different,1]
-                b_index = dframe_normals.iloc[it,1]    
-            new_vertice = global_coordinates_cuboid[b_index-1]-global_coordin_corners_robot[a_index-1]
-            vertices_list.append(new_vertice)
-
-    if dframe_normals.iloc[0,-1] != dframe_normals.iloc[-1,-1]:
-        if dframe_normals.iloc[-1,-1] == 'r':
-            a_index = dframe_normals.iloc[-1,1]
-            b_index = dframe_normals.iloc[0,1]
-        else:
-            a_index = dframe_normals.iloc[0,1]
-            b_index = dframe_normals.iloc[-1,1]    
-        new_vertice = global_coordinates_cuboid[b_index-1]-global_coordin_corners_robot[a_index-1]
-        vertices_list.append(new_vertice)
-
-            
-        #if next_different != it
-    #  print(f'it = {it}, current_element = {current_element} | next_different_index = {next_different}, next_different_element = {next_diff_element}')
+    print(" ")
+    print(dframe_normals)
+    print(" ")
+    
+    vertices_list = mapping_loop(dframe=dframe_normals, corners_robot=global_coordin_corners_robot,corners_obstacle=global_coordinates_cuboid)
     return vertices_list
