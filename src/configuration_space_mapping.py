@@ -190,13 +190,7 @@ def mapping_loop(dframe, corners_robot, corners_obstacle):
         vertices_list.append(new_point)
     return vertices_list
 
-
-def mapping(client_id, scene_objects, robot_name):
-
-    listazinha = get_scene_objects_info(client_id, scene_objects)
-    info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
-
-
+def get_robot_info_for_mapping(client_id, robot_name, robot_information):
     # ROBOT STUFF
     # Now that I have the objects handlers, I need to get the robot handler so I can retrieve its global coordinates and normals
     local_c_robot = get_bounding_box_corners_local_coordinates(client_id, robot_information['object_handler'])
@@ -210,13 +204,13 @@ def mapping(client_id, scene_objects, robot_name):
     robot_handle = sim.simxGetObjectHandle(client_id, robot_name,sim.simx_opmode_blocking)
     normals_robot = get_normals_orientation(sim.simxGetObjectOrientation(client_id,robot_handle[1],-1,sim.simx_opmode_blocking)[1][2])
 
-    
+
     temporary_normals_robot = []
     for normal_robot_element in normals_robot:
         temporary_normals_robot.append(convert_angle_to_0_2pi_interval(normal_robot_element))
 
     normals_robot = temporary_normals_robot
-    
+
     print(f'points bounding box around robot: {global_coordin_corners_robot}')
     print(f'normals bounding box around robot: {normals_robot}')
 
@@ -232,22 +226,21 @@ def mapping(client_id, scene_objects, robot_name):
 
     print(f'inverted normals bounding box around robot: {normals_robot}')
     print(" ")
-    # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
-    # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
+    return normals_robot, global_coordin_corners_robot
 
-    cuboid_number = 0
+
+def get_obstacle_info_for_mapping(client_id, obstacle_number,listazinha):
 
     # OBSTACLE
+    local_c_cuboid = get_bounding_box_corners_local_coordinates(client_id, listazinha[obstacle_number]['object_handler'])
 
-    local_c_cuboid = get_bounding_box_corners_local_coordinates(client_id, listazinha[cuboid_number]['object_handler'])
-
-    orientation_cuboid = listazinha[cuboid_number]['object_orientation']
+    orientation_cuboid = listazinha[obstacle_number]['object_orientation']
     orientation_cuboid.reverse() # notice that the orientation vector is reversed (theta is naturally the last, but we need to have it as the first value)
-    position_cuboid = listazinha[cuboid_number]['object_position']
+    position_cuboid = listazinha[obstacle_number]['object_position']
 
     global_coordinates_cuboid = map_local_coordinates_to_global_coordinates(local_c_cuboid, orientation_cuboid, position_cuboid)
 
-    normals_cuboid = get_normals_orientation(listazinha[cuboid_number]['object_orientation'][2])
+    normals_cuboid = get_normals_orientation(listazinha[obstacle_number]['object_orientation'][2])
 
     temporary_normals_cuboid = []
     for normal_cuboid_element in normals_cuboid:
@@ -257,6 +250,20 @@ def mapping(client_id, scene_objects, robot_name):
 
     print(f'points bounding box around cuboid0: {global_coordinates_cuboid}')
     print(f'normals bounding box around cuboid0: {normals_cuboid}')
+    return normals_cuboid, global_coordinates_cuboid
+
+def mapping(client_id, scene_objects, robot_name):
+
+    listazinha = get_scene_objects_info(client_id, scene_objects)
+    info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
+
+    # ROBOT STUFF
+    normals_robot, global_coordin_corners_robot = get_robot_info_for_mapping(client_id,robot_name,robot_information=robot_information)
+    # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
+    # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
+
+    cuboid_number = 0
+    normals_cuboid, global_coordinates_cuboid = get_obstacle_info_for_mapping(client_id, cuboid_number,info_list)
 
     # I need to check if a given normal is between other two, right? Then I can use a table or something to do so
     # How? On one column I gonna put the normals of the robot and of the obstacle.
