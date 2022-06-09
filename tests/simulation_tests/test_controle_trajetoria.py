@@ -33,7 +33,7 @@ print(f'{robo}\n{pos_robo}\n{ang_robo}')
 # Gerar Caminho
 r_x=2
 r_y=2
-number_of_points=50
+number_of_points=200
 lem = Lemniscate(r_x,r_y,1/60,1/60)
 lem_position, lem_velocity, lem_acceleration, lem_orientation = lem.get_curve_points(number_of_points)
 
@@ -66,8 +66,7 @@ while current_t <= tmax:
     current_t = time.time() - start_t
     
     lem_p, lem_v, lem_a, lem_orientation = lem.get_point(current_t)
-    print([i.round(3) for i in lem.get_point(current_t)])
-
+    
     delta_vx = lem_v[0] - v_robo[0]
     delta_vy = lem_v[1] - v_robo[1]
     
@@ -83,7 +82,6 @@ while current_t <= tmax:
 
     # Compensação do modelo não linear
     v1c = np.cos(theta)*x2c + np.sin(theta)*y2c
-    # = -(np.sin(theta)/v_r)*x2c + (np.cos(theta)/v_r)*y2c
     wc = (y2c * np.cos(theta) - x2c * np.sin(theta)) / (v_r + 0.001)
     
 
@@ -94,7 +92,7 @@ while current_t <= tmax:
     wd = (vc/rd) + (B/(2*rd))*wc
     we = (vc/re) - (B/(2*re))*wc
 
-    
+    print([i.round(3) for i in lem.get_point(current_t)])
     print(round(x2c,3), round(y2c,3), round(v_r,3), round(theta,3))
     print(round(v1c,3), round(vc,3) , round(wc,3))
     print(round(we,3), round(wd,3))
