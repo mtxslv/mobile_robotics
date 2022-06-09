@@ -299,7 +299,8 @@ def mapping(client_id, scene_objects, robot_name):
     print(f'dframe ={dframe_normals}')
     print(f'corners_robot = {global_coordin_corners_robot}')
     print(f'corners_obstacle = {global_coordinates_cuboid}')
-    vertices_list = mapping_loop(dframe=dframe_normals, 
+    old_index = [pd.Series([0,1,2,3,4,5,6,7])]
+    vertices_list = mapping_loop(dframe=dframe_normals.set_index(old_index), 
                                  corners_robot=global_coordin_corners_robot,
                                  corners_obstacle=global_coordinates_cuboid)
     return vertices_list
