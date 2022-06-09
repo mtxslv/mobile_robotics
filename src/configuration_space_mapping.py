@@ -1,6 +1,8 @@
+from matplotlib.patches import Polygon
 import numpy as np
 import pandas as pd
 from utils import *
+
 
 def get_normals_orientation(euler_z_angle, polygon_type = 'cubic'):
     """This method returns the normals on a polygon's horizontal faces, considering one of the faces is aligned with the X axis.
@@ -285,22 +287,32 @@ def mapping(client_id, scene_objects, robot_name):
     
     # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
     # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
+    patches = []
+    for i in range(0,len(info_list)):
+        cuboid_number = i
+        
+        normals_cuboid, global_coordinates_cuboid = get_obstacle_info_for_mapping(client_id, cuboid_number,info_list)
 
-    cuboid_number = 0
-    normals_cuboid, global_coordinates_cuboid = get_obstacle_info_for_mapping(client_id, cuboid_number,info_list)
+        dframe_normals = get_normals_dataframe(inverted_normals_robot, normals_cuboid)
+        
+        old_index = [pd.Series([0,1,2,3,4,5,6,7])]
+        vertices_list = mapping_loop(dframe=dframe_normals.set_index(old_index), 
+                                corners_robot=global_coordin_corners_robot,
+                                corners_obstacle=global_coordinates_cuboid)
+        points = np.array(vertices_list)
+        centro_do_obstaculo = np.array(info_list[cuboid_number]['object_position'])
+        c_corners = points + centro_do_obstaculo
+
+        polygon = Polygon(c_corners[:,:2],closed=True)
+        patches.append(polygon)
+
+    #print(" ")
+    #print(" ")
+    #print(" ")
+    #print("arguments going inside mapping loop...")
+    #print(f'dframe ={dframe_normals}')
+    #print(f'corners_robot = {global_coordin_corners_robot}')
+    #print(f'corners_obstacle = {global_coordinates_cuboid}')
 
 
-    dframe_normals = get_normals_dataframe(inverted_normals_robot, normals_cuboid)
-
-    print(" ")
-    print(" ")
-    print(" ")
-    print("arguments going inside mapping loop...")
-    print(f'dframe ={dframe_normals}')
-    print(f'corners_robot = {global_coordin_corners_robot}')
-    print(f'corners_obstacle = {global_coordinates_cuboid}')
-    old_index = [pd.Series([0,1,2,3,4,5,6,7])]
-    vertices_list = mapping_loop(dframe=dframe_normals.set_index(old_index), 
-                                 corners_robot=global_coordin_corners_robot,
-                                 corners_obstacle=global_coordinates_cuboid)
-    return vertices_list
+    return patches
