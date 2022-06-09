@@ -252,19 +252,7 @@ def get_obstacle_info_for_mapping(client_id, obstacle_number,listazinha):
     print(f'normals bounding box around cuboid0: {normals_cuboid}')
     return normals_cuboid, global_coordinates_cuboid
 
-def mapping(client_id, scene_objects, robot_name):
-
-    listazinha = get_scene_objects_info(client_id, scene_objects)
-    info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
-
-    # ROBOT STUFF
-    normals_robot, global_coordin_corners_robot = get_robot_info_for_mapping(client_id,robot_name,robot_information=robot_information)
-    # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
-    # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
-
-    cuboid_number = 0
-    normals_cuboid, global_coordinates_cuboid = get_obstacle_info_for_mapping(client_id, cuboid_number,info_list)
-
+def get_normals_dataframe(normals_robot, normals_obstacle):
     # I need to check if a given normal is between other two, right? Then I can use a table or something to do so
     # How? On one column I gonna put the normals of the robot and of the obstacle.
     # On other column I'll indicate the owner of the normal: robot or obstacle
@@ -273,7 +261,7 @@ def mapping(client_id, scene_objects, robot_name):
     # Then I will scan the lines to see if a given normal lies between other two
     normal_robot_series = pd.Series(normals_robot, name='normals')
     normal_robot_name_series = pd.Series([1,2,3,4], name= 'normal_order')
-    normal_cuboid_series = pd.Series(normals_cuboid, name='normals')
+    normal_cuboid_series = pd.Series(normals_obstacle, name='normals')
     normal_cuboid_name_series = pd.Series([1,2,3,4], name= 'normal_order')
 
     normals_series = pd.concat([normal_robot_series, normal_cuboid_series], ignore_index=True)
@@ -284,7 +272,26 @@ def mapping(client_id, scene_objects, robot_name):
     print(" ")
     print(dframe_normals)
     print(" ")
+
+    return dframe_normals
+
+def mapping(client_id, scene_objects, robot_name):
+
+    listazinha = get_scene_objects_info(client_id, scene_objects)
+    info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
+
+    # ROBOT STUFF
+    inverted_normals_robot, global_coordin_corners_robot = get_robot_info_for_mapping(client_id,robot_name,robot_information=robot_information)
     
+    # OBSTACLE STUFF, FOR 1 OBSTACLE ONLY
+    # I need to retrieve the global coordinates and normals of an obstacle. Let's suppose the Cuboid_0 for this test
+
+    cuboid_number = 0
+    normals_cuboid, global_coordinates_cuboid = get_obstacle_info_for_mapping(client_id, cuboid_number,info_list)
+
+
+    dframe_normals = get_normals_dataframe(inverted_normals_robot, normals_cuboid)
+
     print(" ")
     print(" ")
     print(" ")
