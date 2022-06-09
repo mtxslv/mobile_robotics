@@ -4,8 +4,8 @@ Here you'll find everything you need to know about the projects regarding SISTEM
 # Important Links:
 * [Trello](https://trello.com/invite/b/LE1Vd2Gn/085423fc3f98ddc30c34dec30c24bd3e/primeio-projeto-primeira-meta)
 * [Calendar](https://calendar.google.com/calendar/u/0?cid=dW8wNGxyY25oZnMxYXY1ZWk5M2I3NDBwbThAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
-* [Slide](https://docs.google.com/presentation/d/1Eh-G889aNMEwxEHvTvcuRe9rz5iG43qhoI5tFvpyMJU/edit#slide=id.g8714a43093_3_682)
-
+* [Slides Simulation Seminar](https://docs.google.com/presentation/d/1Eh-G889aNMEwxEHvTvcuRe9rz5iG43qhoI5tFvpyMJU/edit#slide=id.g8714a43093_3_682)
+* [Slides First Project](https://docs.google.com/presentation/d/1vv4ZA68Gq9pY3Shd31ZKyyyXiAz5y6LVSJN09LMnVNY/edit#slide=id.g10066b48594_0_55)
 
 # Primeiro Projeto
 ## Meta 01 (. - 3 de maio)
