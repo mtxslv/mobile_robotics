@@ -278,7 +278,16 @@ def get_normals_dataframe(normals_robot, normals_obstacle):
     return dframe_normals
 
 def mapping(client_id, scene_objects, robot_name):
+    """This function maps the work space into configuration space.
 
+    Args:
+        client_id (int): 
+        scene_objects (list): a list of objects names in the scene (including robot)
+        robot_name (str): the name of the robot in scene
+
+    Returns:
+        patches (list): a list of polygons (each polygon is a C-object)
+    """
     listazinha = get_scene_objects_info(client_id, scene_objects)
     info_list, robot_information = split_robot_from_info_list(listazinha,robot_name)
 
@@ -305,14 +314,5 @@ def mapping(client_id, scene_objects, robot_name):
 
         polygon = Polygon(c_corners[:,:2],closed=True)
         patches.append(polygon)
-
-    #print(" ")
-    #print(" ")
-    #print(" ")
-    #print("arguments going inside mapping loop...")
-    #print(f'dframe ={dframe_normals}')
-    #print(f'corners_robot = {global_coordin_corners_robot}')
-    #print(f'corners_obstacle = {global_coordinates_cuboid}')
-
 
     return patches
