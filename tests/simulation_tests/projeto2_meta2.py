@@ -30,8 +30,9 @@ def test_magic_move():
 def test_move_controlled():
 
     #MANDAR O ROBÔ PRO PONTO INICIAL DA SEQUÊNCIA
-    ponto_pra_ir = [ lista_pontos[4][0], lista_pontos[4][1], position_vector[2] ]
+    ponto_pra_ir = [ lista_pontos[0][0], lista_pontos[0][1], position_vector[2] ]
     sim.simxSetObjectPosition(clientID,robo, -1, ponto_pra_ir, sim.simx_opmode_blocking)
+    print(f'robo colocado em {ponto_pra_ir}')
 
     #Ganhos do controlador
     k_theta = 0.1
@@ -147,9 +148,9 @@ if __name__ == "__main__":
     #ponto_pra_ir = [ lista_pontos[4][0], lista_pontos[4][1], position_vector[2] ]
     #sim.simxSetObjectPosition(clientID,robo, -1, ponto_pra_ir, sim.simx_opmode_blocking)
 
-    teste_a_ser_realizado = 'magic'
+    teste_a_ser_realizado = 'magic' # MODIFICAR AQUI
 
     if teste_a_ser_realizado == 'magic':
         test_magic_move()
-    else:
+    elif teste_a_ser_realizado == 'control':
         test_move_controlled()
