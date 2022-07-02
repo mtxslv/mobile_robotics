@@ -7,3 +7,5 @@ python3.8 -m pip install pynput
 ```
 
 because I use _python 3.8_ in general.
+
+The keyboard control is based on the example located at the [_ReadTheDocs_](https://pynput.readthedocs.io/en/latest/keyboard.html#monitoring-the-keyboard).
