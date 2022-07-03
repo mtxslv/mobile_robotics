@@ -76,7 +76,6 @@ def on_release(key):
     if key.char == 'a' or key.char == 'w' or key.char == 's' or key.char == 'd':
         move_safe('s', clientID, left_motor_handle, right_motor_handle)
     if key.char == 'q':
-        stop_sim = True
         return False
     if key == keyboard.Key.esc:
         print(type(key))
