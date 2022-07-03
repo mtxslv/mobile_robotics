@@ -1,6 +1,7 @@
 import sys
 import os
 
+import numpy as np
 from pynput import keyboard 
 
 import time
@@ -10,7 +11,6 @@ sys.path.insert(0, os.path.abspath(
 
 from utils import *
 
-stop_sim = False
 # Conectar no Vrep
 clientID = connect_2_sim()
 test_connection(clientID)
@@ -44,12 +44,14 @@ def move_safe(direction, clientID, left_motor_handle, right_motor_handle):
 
 # callback function when the key is pressed
 def on_press(key):
-    detection_state, detection_state_bool, detected_point, distance, normal_surface = sim.simxReadProximitySensor(clientID=clientID, sensorHandle=ultras1, operationMode=sim.simx_opmode_blocking)
-    if detection_state_bool:
-        print(f'obstacle found at distance {distance}')
-        #move_safe('r', clientID, left_motor_handle, right_motor_handle)
-        #time.sleep(0.3)
-        #move_safe('s', clientID, left_motor_handle, right_motor_handle)
+    _, _, detected_point, _, _ = sim.simxReadProximitySensor(clientID=clientID, sensorHandle=ultras1, operationMode=sim.simx_opmode_blocking)
+    distance = np.sqrt(detected_point[0]**2 + detected_point[1]**2 + detected_point[2]**2)
+    print(f'distance = {distance}')
+    if distance < 0.4:
+        print(f'obstacle found ')
+        move_safe('r', clientID, left_motor_handle, right_motor_handle)
+        time.sleep(1)
+        move_safe('s', clientID, left_motor_handle, right_motor_handle)
     try:
         if key.char == 'a':
             move_safe('l', clientID, left_motor_handle, right_motor_handle)
