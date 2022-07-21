@@ -7,6 +7,7 @@ Here you'll find everything you need to know about the projects regarding SISTEM
 * [Slides Simulation Seminar](https://docs.google.com/presentation/d/1Eh-G889aNMEwxEHvTvcuRe9rz5iG43qhoI5tFvpyMJU/edit#slide=id.g8714a43093_3_682)
 * [Slides First Project](https://docs.google.com/presentation/d/1vv4ZA68Gq9pY3Shd31ZKyyyXiAz5y6LVSJN09LMnVNY/edit#slide=id.g10066b48594_0_55)
 * [Slides Second Project/ROS](https://docs.google.com/presentation/d/126ER057O4IhNq20BbtyoH9c7sfFEpZEJ8YV1HUDyzEc/edit#slide=id.p)
+* [Slides 3rd Project](https://docs.google.com/presentation/d/1hwvX2vBSNK5WOi12faF15z5EELcRZ6E4r-z6zT_6B3E/edit#slide=id.p1)
 
 # Primeiro Projeto
 ## Meta 01 (. - 3 de maio)
